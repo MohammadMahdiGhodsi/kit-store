@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>جزئیات سفارش | نازاستور</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8edf5 100%);
+            padding: 15px;
+            font-family: 'IRANSans', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        .order-detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 76, 255, 0.1);
+        }
+
+        /* هدر */
+        .order-header {
+            background: linear-gradient(135deg, #004cff, #6b9fff);
+            padding: 25px 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .order-header h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .order-header p {
+            font-size: 12px;
+            opacity: 0.9;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* بخش اطلاعات */
+        .info-section {
+            padding: 18px;
+            border-bottom: 1px solid #f0f4ff;
+        }
+
+        .section-title {
+            font-size: 15px;
+            color: #004cff;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 3px solid #004cff;
+            padding-right: 12px;
+        }
+
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
+            padding: 12px 15px;
+            border-radius: 16px;
+            border: 1px solid #e8efff;
+            transition: all 0.2s ease;
+        }
+
+        .info-row:hover {
+            transform: translateX(-3px);
+            border-color: #004cff;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #8a9bb5;
+            width: 95px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .info-value {
+            flex: 1;
+            font-size: 14px;
+            color: #1a2a4f;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        /* وضعیت */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: #ef6c00;
+        }
+
+        .status-paid {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+        }
+
+        .status-shipped {
+            background: linear-gradient(135deg, #e3f2fd, #bbdef5);
+            color: #1565c0;
+        }
+
+        .status-delivered {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+        }
+
+        .status-cancelled {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #c62828;
+        }
+
+        /* محصولات - کارت style */
+        .products-title {
+            font-size: 16px;
+            padding: 18px;
+            background: linear-gradient(135deg, #f0f5ff, #e8f0ff);
+            margin: 0;
+            font-weight: 700;
+            color: #004cff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .products-list {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eef3ff;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 76, 255, 0.1);
+            border-color: #004cff;
+        }
+
+        .product-img {
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a2a4f;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .product-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .product-details span {
+            background: linear-gradient(135deg, #f0f5ff, #e8f0ff);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #004cff;
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .product-quantity {
+            font-size: 11px;
+            color: #8a9bb5;
+            font-weight: 500;
+        }
+
+        {#.product-total {#}
+        {#    font-size: 13px;#}
+        {#    font-weight: 700;#}
+        {#    color: #004cff;#}
+        {#    background: #e8f0ff;#}
+        {#    padding: 4px 12px;#}
+        {#    border-radius: 20px;#}
+        {#    display: inline-block;#}
+        {#    white-space: nowrap;#}
+        {#    margin-top: -5px; /* اضافه شد - بالا بردن */#}
+        {#}#}
+
+        /* جمع کل */
+        .total-box {
+            background: linear-gradient(135deg, #004cff, #6b9fff);
+            padding: 18px 22px;
+            margin: 0 18px 20px 18px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0, 76, 255, 0.25);
+        }
+
+        .total-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .total-amount {
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        /* دکمه بازگشت */
+        .back-btn {
+            display: block;
+            background: white;
+            color: #004cff;
+            text-align: center;
+            padding: 14px;
+            margin: 0 18px 20px 18px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid #004cff;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #004cff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 76, 255, 0.3);
+        }
+
+        /* دسکتاپ */
+        @media (min-width: 768px) {
+            body {
+                padding: 30px;
+            }
+
+            .order-detail-container {
+                border-radius: 32px;
+            }
+
+            .product-img {
+                width: 90px;
+                height: 90px;
+            }
+
+            .product-title {
+                font-size: 14px;
+            }
+
+            .total-amount {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="order-detail-container">
+    <!-- هدر -->
+    <div class="order-header">
+        <h2>📋 جزئیات سفارش #{{ order.id }}</h2>
+        <p>📅 {{ order.created_at|date:"Y/m/d H:i" }}</p>
+    </div>
+
+    <!-- اطلاعات وضعیت و ارسال -->
+    <div class="info-section">
+        <div class="section-title">
+            <span>📌</span> وضعیت و ارسال
+        </div>
+        <div class="info-grid">
+            <div class="info-row">
+                <span class="info-label">وضعیت :</span>
+                <span class="info-value">
+                    <span class="status-badge
+                        {% if order.status == 'pending' %}status-pending
+                        {% elif order.status == 'paid' %}status-paid
+                        {% elif order.status == 'shipped' %}status-shipped
+                        {% elif order.status == 'delivered' %}status-delivered
+                        {% else %}status-cancelled{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">روش ارسال :</span>
+                <span class="info-value">{{ order.get_shipping_method_display }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">هزینه ارسال :</span>
+                <span class="info-value">{{ order.shipping_cost|floatformat:0 }} تومان</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- اطلاعات گیرنده -->
+    <div class="info-section">
+        <div class="section-title">
+            <span>👤</span> اطلاعات گیرنده
+        </div>
+        <div class="info-grid">
+            <div class="info-row">
+                <span class="info-label">نام و نام خانوادگی :</span>
+                <span class="info-value">{{ order.first_name }} {{ order.last_name }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">شماره تماس :</span>
+                <span class="info-value">📞 {{ order.phone }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">کد پستی :</span>
+                <span class="info-value">📮 {{ order.postal_code }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">آدرس :</span>
+                <span class="info-value">📍 {{ order.province }} - {{ order.city }}، {{ order.address }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- محصولات -->
+    <div class="products-title">
+        <span>🛍️</span> محصولات سفارش
+    </div>
+    <div class="products-list">
+        {% for item in order_items %}
+            <div class="product-card">
+                <img src="{{ item.product.get_main_image }}" class="product-img" alt="{{ item.product.title }}">
+                <div class="product-info">
+                    <div class="product-title">{{ item.product.title|truncatechars:40 }}</div>
+                    <div class="product-details">
+                        <span>🎨 {{ item.color|default:"بدون رنگ" }}</span>
+                        <span>📏 {{ item.size|default:"بدون سایز" }}</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="product-quantity">{{ item.quantity }} عدد × {{ item.price|floatformat:0 }} تومان</span>
+{#                        <span class="product-total">{{ item.get_total_price|floatformat:0 }} تومان</span>#}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center; padding: 30px; color: #8a9bb5;">محصولی یافت نشد</p>
+        {% endfor %}
+    </div>
+
+    <!-- جمع کل -->
+    <div class="total-box">
+        <span class="total-label">💰 جمع کل سفارش :</span>
+        <span class="total-amount">{{ order.total_price|floatformat:0 }} تومان</span>
+    </div>
+
+    <!-- دکمه بازگشت -->
+    <a href="{% url 'accounts_app:orders' %}" class="back-btn">← بازگشت به لیست سفارشات</a>
+</div>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s;
+    }
+
+    .loading-logo {
+        width: 100px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .loading-dots span {
+        width: 12px;
+        height: 12px;
+        background: #004cff;
+        border-radius: 50%;
+        animation: bounce 0.8s infinite;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        color: #004cff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <img src="/static/images/logo/Kit.png.jpeg" alt="لوگو" class="loading-logo">
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">در حال بارگذاری...</div>
+    </div>
+</div>
+
+<script>
+    let loadingTimeout = null;
+
+    function showLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+        }
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // وقتی صفحه کامل لود شد، لودینگ رو مخفی کن
+    window.addEventListener('load', function () {
+        hideLoading();
+    });
+
+    // فقط برای لینک‌های داخلی (به جز دکمه بازگشت)
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:')) {
+            // چک کردن اینکه لینک خارجی نیست
+            const currentDomain = window.location.origin;
+            if (link.href.startsWith(currentDomain) || link.href.startsWith('/')) {
+                // جلوگیری از اجرا روی دکمه بازگشت (history.back)
+                if (!link.hasAttribute('data-no-loading')) {
+                    showLoading();
+                }
+            }
+        }
+    });
+
+    // برای دکمه بازگشت مرورگر
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    // برای popstate (وقتی کاربر با دکمه عقب/جلو میره)
+    window.addEventListener('popstate', function () {
+        hideLoading();
+    });
+</script>
+</body>
+</html>

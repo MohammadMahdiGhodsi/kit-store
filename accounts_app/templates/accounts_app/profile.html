@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+
+    <title>پنل کاربری</title>
+
+</head>
+
+<body>
+
+
+<div class="button-container">
+    <a href="/" class="button" style="text-decoration: none;">
+        <svg class="btnc" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 20H7C5.89543 20 5 19.1046 5 18V10.9199C5 10.336 5.25513 9.78132 5.69842 9.40136L10.6984 5.11564C11.4474 4.47366 12.5526 4.47366 13.3016 5.11564L18.3016 9.40136C18.7449 9.78132 19 10.336 19 10.9199V18C19 19.1046 18.1046 20 17 20H15M9 20V14C9 13.4477 9.44772 13 10 13H14C14.5523 13 15 13.4477 15 14V20M9 20H15"
+                  stroke="#004cff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>خانه</span>
+    </a>
+
+    <a href="javascript:void(0);" onclick="toggleCart()" class="button"
+       style="text-decoration: none; position: relative;">
+        <svg class="btnc" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 9C5 7.89543 5.89543 7 7 7H17C18.1046 7 19 7.89543 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z"
+                  stroke="#004cff" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M15 7V6C15 4.34315 13.6569 3 12 3V3C10.3431 3 9 4.34315 9 6V7" stroke="#004cff" stroke-width="1.5"
+                  stroke-linecap="round"/>
+            <path d="M9 11L9 12C9 13.6569 10.3431 15 12 15V15C13.6569 15 15 13.6569 15 12L15 11" stroke="#004cff"
+                  stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>سبد خرید</span>
+
+        {% if cart_count > 0 %}
+            <span style="position: absolute; top: -8px; right: -8px; background: #ff0000; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 0 10px rgba(255,0,0,0.6); padding: 0 4px;">
+            {{ cart_count }}
+        </span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'product_list' %}" class="button" style="text-decoration: none;">
+        <svg class="btnc" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 11.6211V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V11.6211M7.5 9.75C7.5 10.9926 6.49264 12 5.25 12C4.09397 12 3.14157 11.1282 3.01442 10.0062C2.99524 9.83688 3.02176 9.66657 3.06477 9.50173L4.10996 5.49516C4.3397 4.6145 5.13506 4 6.04519 4H17.9548C18.8649 4 19.6603 4.6145 19.89 5.49516L20.9352 9.50173C20.9782 9.66657 21.0048 9.83688 20.9856 10.0062C20.8584 11.1282 19.906 12 18.75 12C17.5074 12 16.5 10.9926 16.5 9.75M7.5 9.75C7.5 10.9926 8.50736 12 9.75 12C10.9926 12 12 10.9926 12 9.75M7.5 9.75L8 4M12 9.75C12 10.9926 13.0074 12 14.25 12C15.4926 12 16.5 10.9926 16.5 9.75M12 9.75V4M16.5 9.75L16 4"
+                  stroke="#004cff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>فروشگاه</span>
+    </a>
+
+    <a href="{% url 'accounts_app:profile' %}" class="button" style="text-decoration: none;">
+        <svg class="btnc" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 21V19C20 16.8 18.2 15 16 15H8C5.8 15 4 16.8 4 19V21" stroke="#004cff" stroke-width="1.5"
+                  stroke-linecap="round"/>
+            <circle cx="12" cy="7" r="4" stroke="#004cff" stroke-width="1.5"/>
+        </svg>
+        <span>حساب من</span>
+    </a>
+</div>
+
+<script>
+    const toggleTheme = document.getElementById("toggleTheme");
+    toggleTheme.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+    });
+</script>
+
+</div>
+
+
+<section class="user-account">
+    <div class="account-page">
+        <!-- ستون سمت راست: پروفایل و منوها -->
+        <aside class="sidebar">
+            <div class="profile-box">
+                <h3 class="username">{{ user.username }}</h3>
+                <p class="mobile">شماره موبایل: {{ user.phone }}</p>
+                {% if user.email %}
+                    <p class="email">ایمیل: {{ user.email }}</p>
+                {% endif %}
+                <p class="member-date">📅 تاریخ عضویت: {{ jalali_joined_date }}</p>
+                <nav class="menu-user">
+                    <a href="{% url "accounts_app:profile" %}">
+                        <li>
+                            <svg viewBox="0 -0.5 25 25" width="30px" height="30px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M9.918 10.0005H7.082C6.66587 9.99708 6.26541 10.1591 5.96873 10.4509C5.67204 10.7427 5.50343 11.1404 5.5 11.5565V17.4455C5.5077 18.3117 6.21584 19.0078 7.082 19.0005H9.918C10.3341 19.004 10.7346 18.842 11.0313 18.5502C11.328 18.2584 11.4966 17.8607 11.5 17.4445V11.5565C11.4966 11.1404 11.328 10.7427 11.0313 10.4509C10.7346 10.1591 10.3341 9.99708 9.918 10.0005Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M9.918 4.0006H7.082C6.23326 3.97706 5.52559 4.64492 5.5 5.4936V6.5076C5.52559 7.35629 6.23326 8.02415 7.082 8.0006H9.918C10.7667 8.02415 11.4744 7.35629 11.5 6.5076V5.4936C11.4744 4.64492 10.7667 3.97706 9.918 4.0006Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M15.082 13.0007H17.917C18.3333 13.0044 18.734 12.8425 19.0309 12.5507C19.3278 12.2588 19.4966 11.861 19.5 11.4447V5.55666C19.4966 5.14054 19.328 4.74282 19.0313 4.45101C18.7346 4.1592 18.3341 3.9972 17.918 4.00066H15.082C14.6659 3.9972 14.2654 4.1592 13.9687 4.45101C13.672 4.74282 13.5034 5.14054 13.5 5.55666V11.4447C13.5034 11.8608 13.672 12.2585 13.9687 12.5503C14.2654 12.8421 14.6659 13.0041 15.082 13.0007Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M15.082 19.0006H17.917C18.7661 19.0247 19.4744 18.3567 19.5 17.5076V16.4936C19.4744 15.6449 18.7667 14.9771 17.918 15.0006H15.082C14.2333 14.9771 13.5256 15.6449 13.5 16.4936V17.5066C13.525 18.3557 14.2329 19.0241 15.082 19.0006Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                </g>
+                            </svg>
+                            داشبورد
+                        </li>
+                    </a>
+                    <a href="/accounts/orders/">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="25px" height="25px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect x="5" y="4" width="14" height="17" rx="2" stroke="#004cff"
+                                      stroke-width="2"></rect>
+                                <path d="M9 9H15" stroke="#004cff" stroke-width="2" stroke-linecap="round"></path>
+                                <path d="M9 13H15" stroke="#004cff" stroke-width="2" stroke-linecap="round"></path>
+                                <path d="M9 17H13" stroke="#004cff" stroke-width="2" stroke-linecap="round"></path>
+                            </svg>
+                            سفارش‌ها
+                        </li>
+                    </a>
+                    <a href="{% url 'accounts_app:address' %}">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="25px" height="25px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path d="M12 13V7M15 10.0008L9 10M19 10.2C19 14.1764 15.5 17.4 12 21C8.5 17.4 5 14.1764 5 10.2C5 6.22355 8.13401 3 12 3C15.866 3 19 6.22355 19 10.2Z"
+                                          stroke="#004cff" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                </g>
+                            </svg>
+                            آدرس‌ها
+                        </li>
+                    </a>
+                    <a href="{% url 'accounts_app:logout' %}">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="20px" height="20px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path d="M15 12L6 12M6 12L8 14M6 12L8 10" stroke="#004cff" stroke-width="2.232"
+                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M12 21.9827C10.4465 21.9359 9.51995 21.7626 8.87865 21.1213C8.11027 20.3529 8.01382 19.175 8.00171 17M16 21.9983C18.175 21.9862 19.3529 21.8897 20.1213 21.1213C21 20.2426 21 18.8284 21 16V14V10V8C21 5.17157 21 3.75736 20.1213 2.87868C19.2426 2 17.8284 2 15 2H14C11.1715 2 9.75733 2 8.87865 2.87868C8.11027 3.64706 8.01382 4.82497 8.00171 7"
+                                          stroke="#004cff" stroke-width="2.232" stroke-linecap="round"></path>
+                                    <path d="M3 9.5V14.5C3 16.857 3 18.0355 3.73223 18.7678C4.46447 19.5 5.64298 19.5 8 19.5M3.73223 5.23223C4.46447 4.5 5.64298 4.5 8 4.5"
+                                          stroke="#004cff" stroke-width="2.232" stroke-linecap="round"></path>
+                                </g>
+                            </svg>
+                            خروج
+                        </li>
+                    </a>
+                </nav>
+        </aside>
+
+        <!-- ستون سمت چپ: داشبورد -->
+        <main class="dashboard">
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <h4> ارسال شده</h4>
+                    <p> 0 محصول</p>
+                </div>
+                <div class="stat-card">
+                    <h4>خریداری شده</h4>
+                    <p>0 محصول</p>
+                </div>
+                <div class="stat-card">
+                    <h4>مبلغ سفارشات</h4>
+                    <p>0 تومان</p>
+                </div>
+            </div>
+
+            <div class="orders-box">
+                <h3>📦 سفارش‌های اخیر شما</h3>
+                {% if orders %}
+                    <div class="orders-table-container">
+                        <table class="orders-table">
+                            <thead>
+                            <tr>
+                                <th>شماره سفارش</th>
+                                <th>تاریخ</th>
+                                <th>تعداد اقلام</th>
+                                <th>مبلغ کل</th>
+                                <th>وضعیت</th>
+                                <th>جزئیات</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.created_at|date:"Y/m/d" }}</td>
+                                    <td>{{ order.items.count }}</td>
+                                    <td>{{ order.total_price|floatformat:0 }} تومان</td>
+                                    <td>
+                                        {% if order.status == 'pending' %}
+                                            <span class="status-badge status-pending">⏳ در انتظار پرداخت</span>
+                                        {% elif order.status == 'paid' %}
+                                            <span class="status-badge status-paid">✅ پرداخت شده</span>
+                                        {% elif order.status == 'shipped' %}
+                                            <span class="status-badge status-shipped">🚚 ارسال شده</span>
+                                        {% elif order.status == 'delivered' %}
+                                            <span class="status-badge status-delivered">📦 تحویل داده شده</span>
+                                        {% elif order.status == 'cancelled' %}
+                                            <span class="status-badge status-cancelled">❌ لغو شده</span>
+                                        {% else %}
+                                            <span class="status-badge status-pending">{{ order.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="/accounts/order/{{ order.id }}/" class="order-detail-btn">📋 مشاهده</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-orders">
+                        <div class="empty-icon">🛒</div>
+                        <p>هنوز سفارشی ثبت نکرده‌اید</p>
+                        <a href="{% url 'product_list' %}" class="shop-now-btn">🛍️ شروع خرید</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- بخش آدرس‌های ذخیره شده -->
+            <div class="address-box" style="margin-top: 30px;">
+                <div class="address-header">
+                    <svg viewBox="0 -0.05 26.1 26.1" width="20px" height="20px" xmlns="http://www.w3.org/2000/svg"
+                         fill="#000000">
+                        <path d="M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z M12,11.5c-1.38,0-2.5-1.12-2.5-2.5 s1.12-2.5,2.5-2.5s2.5,1.12,2.5,2.5S13.38,11.5,12,11.5z"/>
+                    </svg>
+                    <h3>📍 آدرس‌های من</h3>
+                    <a href="{% url 'accounts_app:address' %}" class="add-address">➕ مدیریت آدرس‌ها</a>
+                </div>
+
+                {% if addresses %}
+                    <div class="address-list">
+                        {% for addr in addresses %}
+                            <div class="address-item {% if addr.is_default %}default-address{% endif %}"
+                                 style="background: #f8faff; border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid {% if addr.is_default %}#004cff{% else %}#e0e6f0{% endif %};">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <strong style="color: #004cff;">
+                                        {% if addr.is_default %}⭐ آدرس پیش‌فرض{% else %}📦 آدرس{% endif %}
+                                    </strong>
+                                    <a href="{% url 'accounts_app:address' %}"
+                                       style="background: #e8f0ff; color: #004cff; padding: 4px 12px; border-radius: 20px; text-decoration: none; font-size: 11px;">✏️
+                                        ویرایش</a>
+                                </div>
+                                <div class="address-detail">
+                                    <p style="margin: 5px 0; font-size: 13px;">
+                                        <strong>گیرنده:</strong> {{ addr.receiver_name }}</p>
+                                    <p style="margin: 5px 0; font-size: 13px;">
+                                        <strong>آدرس:</strong> {{ addr.province }} - {{ addr.city }}، {{ addr.address }}
+                                    </p>
+                                    <p style="margin: 5px 0; font-size: 13px;"><strong>کد
+                                        پستی:</strong> {{ addr.postal_code }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-address"
+                         style="text-align: center; padding: 30px; background: #f8faff; border-radius: 16px;">
+                        <p style="color: #8899aa;">📭 هنوز آدرسی ثبت نکرده‌اید</p>
+                        <a href="{% url 'accounts_app:address' %}" class="add-address-btn"
+                           style="display: inline-block; background: #004cff; color: white; padding: 8px 20px; border-radius: 30px; text-decoration: none; margin-top: 10px;">➕
+                            افزودن آدرس جدید</a>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</section>
+
+
+<footer class="nazastore-footer">
+    <div class="footer-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h3>درباره کیت استور</h3>
+            <p>کیت استور با هدف ارائه بهترین محصولات با ضمانت اصالت، ارسال سریع و پشتیبانی ۲۴ ساعته راه‌اندازی شده است.
+                ما به تجربه خریدی امن و لذت‌بخش برای شما متعهدیم.</p>
+        </div>
+        <div class="footer-section links">
+            <h3>دسترسی سریع</h3>
+            <ul>
+                <li><a href="/">صفحه اصلی</a></li>
+                <li><a href="{% url 'product_list' %}">فروشگاه</a></li>
+                <li><a href="{% url 'cart_detail' %}">سبد خرید</a></li>
+                <li><a href="{% url 'about-us' %}">درباره ما</a></li>
+
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h3 style="color: black;">تماس با ما</h3>
+            <p style="color: black;">09383150031 :📞 شماره تماس</p>
+            <p style="color: black;">mmdghods@gmail.com:📧 ایمیل</p>
+            <p style="color: black;">سبزوار , خیابان مطهری 21 :📍 آدرس</p>
+        </div>
+        <div class="footer-section trust">
+            <h3>نماد اعتماد</h3>
+            <img src="/static/images/namad/c3.webp" alt="نماد ساماندهی" class="trust-img">
+            <img src="/static/images/namad/namad.png" alt="نماد اعتماد" class="trust-img">
+            <img src="/static/images/namad/named2.png" alt="نماد ساماندهی" class="trust-img">
+        </div>
+    </div>
+    <div class="footer-copyright"
+         style="text-align: center; padding: 20px 15px 10px; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 20px;">
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+            تمامی حقوق این سایت متعلق به <strong style="color: #004cff;">محمد مهدی قدسی</strong> می‌باشد.
+        </p>
+        <p style="margin: 5px 0; font-size: 12px; color: #8899aa;">
+            طراحی و توسعه توسط محمد مهدی قدسی
+        </p>
+    </div>
+</footer>
+
+
+<script src="/static/js/script.js"></script>
+<style>
+    .address-box {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .address-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f5ff;
+    }
+
+    .address-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #1a2a4f;
+        flex: 1;
+    }
+
+    .add-address {
+        background: linear-gradient(135deg, #004cff, #006eff);
+        color: white;
+        padding: 8px 18px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .add-address:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0, 76, 255, 0.3);
+    }
+
+    .address-item {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .address-item.saved-address {
+        background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
+        border: 1px solid #e0e8f5;
+    }
+
+    .address-badge {
+        background: linear-gradient(135deg, #e8f0ff, #d4e0ff);
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid #c8d8ff;
+    }
+
+    .address-title {
+        color: #004cff;
+        font-size: 0.9rem;
+    }
+
+    .default-badge {
+        background: #004cff;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+
+    .address-details {
+        padding: 15px 18px;
+    }
+
+    .address-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 0;
+        border-bottom: 1px dashed #f0f0f0;
+    }
+
+    .address-row:last-child {
+        border-bottom: none;
+    }
+
+    .address-icon {
+        font-size: 1rem;
+        width: 25px;
+    }
+
+    .address-text {
+        color: #333;
+        font-size: 0.9rem;
+        flex: 1;
+    }
+
+    .address-actions {
+        padding: 12px 18px;
+        background: #f8faff;
+        text-align: left;
+    }
+
+    .edit-address-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        color: #004cff;
+        padding: 8px 16px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid #004cff;
+        transition: all 0.3s;
+    }
+
+    .edit-address-btn:hover {
+        background: #004cff;
+        color: white;
+    }
+
+    /* حالت خالی بودن آدرس */
+    .empty-address {
+        text-align: center;
+        padding: 40px 20px;
+        background: #fafcff;
+        border-radius: 16px;
+        border: 1px dashed #c8d8ff;
+    }
+
+    .empty-address-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.6;
+    }
+
+    .empty-address-text {
+        color: #8899aa;
+        margin-bottom: 20px;
+    }
+
+    .add-address-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #004cff, #006eff);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .add-address-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 76, 255, 0.3);
+    }
+</style>
+<style>
+    /* استایل سفارشات */
+    .orders-table-container {
+        overflow-x: auto;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .orders-table th {
+        background: #f8faff;
+        color: #004cff;
+        font-weight: 600;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: #fff3e0;
+        color: #ef6c00;
+    }
+
+    .status-paid {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-shipped {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .status-delivered {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-cancelled {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .order-detail-btn {
+        background: none;
+        border: none;
+        color: #004cff;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s;
+    }
+
+    .order-detail-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .empty-orders {
+        text-align: center;
+        padding: 40px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.6;
+    }
+
+    .shop-now-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #004cff, #006eff);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 30px;
+        text-decoration: none;
+        margin-top: 15px;
+        transition: all 0.3s;
+    }
+
+    .shop-now-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 76, 255, 0.3);
+    }
+
+    /* موبایل */
+    @media (max-width: 768px) {
+        .orders-table th,
+        .orders-table td {
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            font-size: 10px;
+        }
+    }
+</style>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s;
+    }
+
+    .loading-logo {
+        width: 100px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .loading-dots span {
+        width: 12px;
+        height: 12px;
+        background: #004cff;
+        border-radius: 50%;
+        animation: bounce 0.8s infinite;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        color: #004cff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <img src="/static/images/logo/Kit.png.jpeg" alt="لوگو" class="loading-logo">
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">در حال بارگذاری...</div>
+    </div>
+</div>
+
+<script>
+    let loadingTimeout = null;
+
+    function showLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+        }
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // وقتی صفحه کامل لود شد، لودینگ رو مخفی کن
+    window.addEventListener('load', function () {
+        hideLoading();
+    });
+
+    // فقط برای لینک‌های داخلی (به جز دکمه بازگشت)
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:')) {
+            // چک کردن اینکه لینک خارجی نیست
+            const currentDomain = window.location.origin;
+            if (link.href.startsWith(currentDomain) || link.href.startsWith('/')) {
+                // جلوگیری از اجرا روی دکمه بازگشت (history.back)
+                if (!link.hasAttribute('data-no-loading')) {
+                    showLoading();
+                }
+            }
+        }
+    });
+
+    // برای دکمه بازگشت مرورگر
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    // برای popstate (وقتی کاربر با دکمه عقب/جلو میره)
+    window.addEventListener('popstate', function () {
+        hideLoading();
+    });
+</script>
+<style>
+    .address-box {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .address-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f5ff;
+    }
+
+    .address-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #1a2a4f;
+        flex: 1;
+    }
+
+    .add-address {
+        background: linear-gradient(135deg, #004cff, #006eff);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .add-address:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(0, 76, 255, 0.3);
+    }
+
+    .empty-address {
+        text-align: center;
+        padding: 30px;
+        background: #f8faff;
+        border-radius: 16px;
+    }
+
+    .empty-address p {
+        color: #8899aa;
+        margin-bottom: 10px;
+    }
+</style>
+<script>
+    // کنترل نوار پایین با اسکرول - نسخه نرم و حرفه‌ای
+    document.addEventListener('DOMContentLoaded', function () {
+        var bottomNav = document.querySelector('.button-container');
+        if (!bottomNav) return;
+
+        // تنظیم transition اولیه
+        bottomNav.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        bottomNav.style.transform = 'translateY(0)';
+        bottomNav.style.opacity = '1';
+
+        var lastScrollTop = 0;
+        var isHidden = false;
+        var scrollTimeout = null;
+
+        window.addEventListener('scroll', function () {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var windowHeight = window.innerHeight;
+            var documentHeight = document.documentElement.scrollHeight;
+
+            // محاسبه درصد اسکرول
+            var scrollPercent = (scrollTop + windowHeight) / documentHeight;
+
+            // اگر به پایین صفحه رسیدیم، نوار رو نشون بده
+            if (scrollPercent > 0.95) {
+                if (isHidden) {
+                    bottomNav.style.transform = 'translateY(0)';
+                    bottomNav.style.opacity = '1';
+                    isHidden = false;
+                }
+                lastScrollTop = scrollTop;
+                return;
+            }
+
+            // بررسی جهت اسکرول با تاخیر (برای نرمی بیشتر)
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function () {
+                if (scrollTop > lastScrollTop + 15) {
+                    // اسکرول به پایین - مخفی کن
+                    if (!isHidden) {
+                        bottomNav.style.transform = 'translateY(100%)';
+                        bottomNav.style.opacity = '0';
+                        isHidden = true;
+                    }
+                } else if (scrollTop < lastScrollTop - 15) {
+                    // اسکرول به بالا - نشون بده
+                    if (isHidden) {
+                        bottomNav.style.transform = 'translateY(0)';
+                        bottomNav.style.opacity = '1';
+                        isHidden = false;
+                    }
+                }
+                lastScrollTop = scrollTop;
+            }, 2);
+        });
+    });
+</script>
+</body>
+</html>

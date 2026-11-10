@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<style>
+    /* مودال حذف */
+    .custom-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .custom-modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        width: 90%;
+        max-width: 350px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .custom-modal-content h3 {
+        margin: 0 0 10px 0;
+        color: #c62828;
+    }
+
+    .custom-modal-content p {
+        margin: 10px 0 20px 0;
+        color: #555;
+    }
+
+    .custom-modal-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .custom-modal-buttons button {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .confirm-delete-btn {
+        background: #c62828;
+        color: white;
+    }
+
+    .cancel-delete-btn {
+        background: #e0e0e0;
+        color: #333;
+    }
+    
+    .delete-success-msg {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #c62828;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        z-index: 10000;
+        font-weight: bold;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        direction: rtl;
+    }
+}
+
+@keyframes slideDown {
+from {
+top: -50px;
+opacity: 0;
+}
+to {
+top: 20px;
+opacity: 1;
+}
+}
+</style>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>آدرس‌های من | نازاستور</title>
+    <style>
+        .address-main-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .address-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .address-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 76, 255, 0.15);
+        }
+
+        .address-header {
+            background: linear-gradient(135deg, #004cff, #6b9fff);
+            padding: 20px 25px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .address-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .edit-btn, .add-new-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .edit-btn:hover, .add-new-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .address-content {
+            padding: 25px;
+        }
+
+        .address-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .address-field:hover {
+            background: #f8f9fc;
+            margin: 0 -10px;
+            padding: 12px 10px;
+            border-radius: 12px;
+        }
+
+        .address-field.empty-field {
+            opacity: 0.6;
+        }
+
+        .address-field.empty-field:hover {
+            opacity: 1;
+            background: #e8f0ff;
+        }
+
+        .field-icon {
+            width: 24px;
+            color: #004cff;
+            flex-shrink: 0;
+        }
+
+        .field-info {
+            flex: 1;
+        }
+
+        .field-label {
+            font-size: 0.8rem;
+            color: #8899aa;
+            margin-bottom: 4px;
+        }
+
+        .field-value {
+            font-size: 1rem;
+            color: #1a2a4f;
+            font-weight: 500;
+        }
+
+        .field-value.empty {
+            color: #b0bed6;
+            font-style: italic;
+        }
+
+        .field-value input, .field-value textarea, .field-value select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e0e6f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: #f8f9fc;
+            transition: all 0.3s;
+        }
+
+        .field-value input:focus, .field-value textarea:focus, .field-value select:focus {
+            outline: none;
+            border-color: #004cff;
+            box-shadow: 0 0 0 3px rgba(0, 76, 255, 0.1);
+        }
+
+        .field-value textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #004cff, #006eff);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 76, 255, 0.3);
+        }
+
+        .phone-number {
+            background: #f0f5ff;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .phone-number span {
+            color: #004cff;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .alert-message {
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-right: 4px solid #4caf50;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border-right: 4px solid #f44336;
+        }
+
+        .empty-address-message {
+            text-align: center;
+            padding: 40px;
+            color: #8899aa;
+        }
+
+        .empty-address-message svg {
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel-edit {
+            background: #e0e6f0;
+            color: #1a2a4f;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            flex: 1;
+            transition: all 0.3s;
+        }
+
+        .cancel-edit:hover {
+            background: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- هدر (همون کد هدر خودت) -->
+
+<section class="user-account">
+    <div class="account-page">
+        <aside class="sidebar">
+            <div class="profile-box">
+                <h3 class="username">{{ user.username }}</h3>
+                <p class="mobile">شماره موبایل: {{ user.phone }}</p>
+                {% if user.email %}
+                    <p class="email">ایمیل: {{ user.email }}</p>
+                {% endif %}
+                <nav class="menu-user">
+                    <a href="{% url "accounts_app:profile" %}">
+                        <li>
+                            <svg viewBox="0 -0.5 25 25" width="30px" height="30px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M9.918 10.0005H7.082C6.66587 9.99708 6.26541 10.1591 5.96873 10.4509C5.67204 10.7427 5.50343 11.1404 5.5 11.5565V17.4455C5.5077 18.3117 6.21584 19.0078 7.082 19.0005H9.918C10.3341 19.004 10.7346 18.842 11.0313 18.5502C11.328 18.2584 11.4966 17.8607 11.5 17.4445V11.5565C11.4966 11.1404 11.328 10.7427 11.0313 10.4509C10.7346 10.1591 10.3341 9.99708 9.918 10.0005Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M9.918 4.0006H7.082C6.23326 3.97706 5.52559 4.64492 5.5 5.4936V6.5076C5.52559 7.35629 6.23326 8.02415 7.082 8.0006H9.918C10.7667 8.02415 11.4744 7.35629 11.5 6.5076V5.4936C11.4744 4.64492 10.7667 3.97706 9.918 4.0006Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M15.082 13.0007H17.917C18.3333 13.0044 18.734 12.8425 19.0309 12.5507C19.3278 12.2588 19.4966 11.861 19.5 11.4447V5.55666C19.4966 5.14054 19.328 4.74282 19.0313 4.45101C18.7346 4.1592 18.3341 3.9972 17.918 4.00066H15.082C14.6659 3.9972 14.2654 4.1592 13.9687 4.45101C13.672 4.74282 13.5034 5.14054 13.5 5.55666V11.4447C13.5034 11.8608 13.672 12.2585 13.9687 12.5503C14.2654 12.8421 14.6659 13.0041 15.082 13.0007Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M15.082 19.0006H17.917C18.7661 19.0247 19.4744 18.3567 19.5 17.5076V16.4936C19.4744 15.6449 18.7667 14.9771 17.918 15.0006H15.082C14.2333 14.9771 13.5256 15.6449 13.5 16.4936V17.5066C13.525 18.3557 14.2329 19.0241 15.082 19.0006Z"
+                                          stroke="#0040ff" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                </g>
+                            </svg>
+                            داشبورد
+                        </li>
+                    </a>
+                    <a href="/accounts/orders/">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="25px" height="25px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <rect x="5" y="4" width="14" height="17" rx="2" stroke="#004cff"
+                                      stroke-width="2"></rect>
+                                <path d="M9 9H15" stroke="#004cff" stroke-width="2" stroke-linecap="round"></path>
+                                <path d="M9 13H15" stroke="#004cff" stroke-width="2" stroke-linecap="round"></path>
+                                <path d="M9 17H13" stroke="#004cff" stroke-width="2" stroke-linecap="round"></path>
+                            </svg>
+                            سفارش‌ها
+                        </li>
+                    </a>
+                    <a href="{% url 'accounts_app:address' %}">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="25px" height="25px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path d="M12 13V7M15 10.0008L9 10M19 10.2C19 14.1764 15.5 17.4 12 21C8.5 17.4 5 14.1764 5 10.2C5 6.22355 8.13401 3 12 3C15.866 3 19 6.22355 19 10.2Z"
+                                          stroke="#004cff" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"></path>
+                                </g>
+                            </svg>
+                            آدرس‌ها
+                        </li>
+                    </a>
+                    <a href="{% url 'accounts_app:logout' %}">
+                        <li>
+                            <svg viewBox="0 0 24 24" width="20px" height="20px" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path d="M15 12L6 12M6 12L8 14M6 12L8 10" stroke="#004cff" stroke-width="2.232"
+                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M12 21.9827C10.4465 21.9359 9.51995 21.7626 8.87865 21.1213C8.11027 20.3529 8.01382 19.175 8.00171 17M16 21.9983C18.175 21.9862 19.3529 21.8897 20.1213 21.1213C21 20.2426 21 18.8284 21 16V14V10V8C21 5.17157 21 3.75736 20.1213 2.87868C19.2426 2 17.8284 2 15 2H14C11.1715 2 9.75733 2 8.87865 2.87868C8.11027 3.64706 8.01382 4.82497 8.00171 7"
+                                          stroke="#004cff" stroke-width="2.232" stroke-linecap="round"></path>
+                                    <path d="M3 9.5V14.5C3 16.857 3 18.0355 3.73223 18.7678C4.46447 19.5 5.64298 19.5 8 19.5M3.73223 5.23223C4.46447 4.5 5.64298 4.5 8 4.5"
+                                          stroke="#004cff" stroke-width="2.232" stroke-linecap="round"></path>
+                                </g>
+                            </svg>
+                            خروج
+                        </li>
+                    </a>
+                </nav>
+        </aside>
+        <main class="dashboard">
+            <div class="address-main-container" style="width: 100%; padding: 0;">
+                <div class="address-card" id="addressCard">
+                    <div class="address-header">
+                        <h3>📍 آدرس‌های من</h3>
+                        <div class="header-buttons">
+                            {% if can_add %}
+                                <button class="add-new-btn" id="addNewBtn" style="background: #28a745;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white"
+                                         stroke-width="2">
+                                        <path d="M12 5V19M5 12H19"/>
+                                    </svg>
+                                    افزودن آدرس جدید ({{ addresses.count }}/{{ max_addresses }})
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="address-content">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert-message alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- لیست آدرس‌ها -->
+                        {% if addresses %}
+                            {% for addr in addresses %}
+                                <div class="address-item-box {% if addr.is_default %}default-address{% endif %}"
+                                     style="background: #f8faff; border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid {% if addr.is_default %}#004cff{% else %}#e0e6f0{% endif %};">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <strong style="color: #004cff;">{% if addr.is_default %}⭐ پیش‌فرض{% else %}📦
+                                            آدرس{% endif %}</strong>
+                                        <div style="display: flex; gap: 8px;">
+                                            <a href="?set_default={{ addr.id }}" class="btn-default"
+                                               style="background: #e8f0ff; color: #004cff; padding: 4px 12px; border-radius: 20px; text-decoration: none; font-size: 11px;">⭐
+                                                تنظیم پیش‌فرض</a>
+                                            <a href="javascript:void(0);" class="btn-delete"
+                                               onclick="confirmDelete('{{ addr.id }}', this)"
+                                               style="background: #ffebee; color: #c62828; padding: 4px 12px; border-radius: 20px; text-decoration: none; font-size: 11px;">🗑
+                                                حذف</a></div>
+                                    </div>
+                                    <div class="address-info">
+                                        <p><strong>گیرنده:</strong> {{ addr.receiver_name }}</p>
+                                        <p><strong>آدرس:</strong> {{ addr.province }}
+                                            - {{ addr.city }}، {{ addr.address }}</p>
+                                        <p><strong>کد پستی:</strong> {{ addr.postal_code }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-address-message"
+                                 style="text-align: center; padding: 40px; color: #8899aa;">
+                                <p>📭 هنوز آدرسی ثبت نکرده‌اید</p>
+                                <p style="font-size: 12px;">روی دکمه "افزودن آدرس جدید" کلیک کنید</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- فرم افزودن آدرس جدید (مخفی در ابتدا) -->
+                        <div id="addAddressForm"
+                             style="display: none; margin-top: 25px; padding-top: 25px; border-top: 1px solid #eee;">
+                            <h3 style="margin-bottom: 15px;">➕ افزودن آدرس جدید</h3>
+                            <form method="post" id="newAddressForm">
+                                {% csrf_token %}
+                                <div class="form-row"
+                                     style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                                    <div style="flex: 1; min-width: 150px;">
+                                        <label style="display: block; font-size: 12px; margin-bottom: 5px;">نام
+                                            گیرنده</label>
+                                        <input type="text" name="receiver_name"
+                                               value="{{ user.receiver_name|default:user.username }}"
+                                               style="width: 100%; padding: 10px; border: 1px solid #e0e6f0; border-radius: 10px;"
+                                               required>
+                                    </div>
+                                    <div style="flex: 1; min-width: 150px;">
+                                        <label style="display: block; font-size: 12px; margin-bottom: 5px;">استان</label>
+                                        <select name="province" id="provinceSelect"
+                                                style="width: 100%; padding: 10px; border: 1px solid #e0e6f0; border-radius: 10px;"
+                                                required>
+                                            <option value="">انتخاب استان</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1; min-width: 150px;">
+                                        <label style="display: block; font-size: 12px; margin-bottom: 5px;">شهر</label>
+                                        <select name="city" id="citySelect"
+                                                style="width: 100%; padding: 10px; border: 1px solid #e0e6f0; border-radius: 10px;"
+                                                required disabled>
+                                            <option value="">ابتدا استان را انتخاب کنید</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; font-size: 12px; margin-bottom: 5px;">آدرس
+                                        کامل</label>
+                                    <textarea name="address" rows="2"
+                                              style="width: 100%; padding: 10px; border: 1px solid #e0e6f0; border-radius: 10px;"
+                                              required placeholder="خیابان، کوچه، پلاک، واحد"></textarea>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; font-size: 12px; margin-bottom: 5px;">کد پستی</label>
+                                    <input type="text" name="postal_code" id="postalCodeInput"
+                                           style="width: 100%; padding: 10px; border: 1px solid #e0e6f0; border-radius: 10px;"
+                                           required maxlength="10" pattern="[0-9]{10}" title="کد پستی باید 10 رقم باشد">
+                                    <small style="color: #8899aa; font-size: 11px;">کد پستی باید 10 رقم باشد</small>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: inline-flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" name="is_default" value="on">
+                                        <span style="font-size: 13px;">🔹 به عنوان آدرس پیش‌فرض انتخاب شود</span>
+                                    </label>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="save-btn"
+                                            style="background: linear-gradient(135deg, #004cff, #006eff); color: white; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer;">
+                                        💾 ذخیره آدرس
+                                    </button>
+                                    <button type="button" id="cancelAddBtn"
+                                            style="background: #e0e6f0; border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer;">
+                                        ❌ انصراف
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>
+
+<script>
+    let activeField = null;
+    let originalValues = {};
+
+    function activateField(fieldElement) {
+        // اگر قبلاً فیلدی فعال هست، اول اون رو ذخیره نکرده برگردون
+        if (activeField && activeField !== fieldElement) {
+            cancelCurrentEdit();
+        }
+
+        activeField = fieldElement;
+        const fieldName = fieldElement.dataset.field;
+        const displaySpan = fieldElement.querySelector('.display-text');
+        const inputElement = fieldElement.querySelector('.address-input');
+
+        if (!inputElement) return;
+
+        // ذخیره مقدار اصلی
+        originalValues[fieldName] = displaySpan.innerText.replace('➕ برای افزودن کلیک کنید', '').trim();
+
+        // مخفی کردن نمایش متن و نمایش input
+        displaySpan.style.display = 'none';
+        inputElement.style.display = 'block';
+        inputElement.focus();
+
+        // نمایش دکمه‌های اکشن
+        document.getElementById('actionButtons').style.display = 'flex';
+
+        // اسکرول به فیلد فعال
+        fieldElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+
+    function cancelCurrentEdit() {
+        if (activeField) {
+            const displaySpan = activeField.querySelector('.display-text');
+            const inputElement = activeField.querySelector('.address-input');
+
+            displaySpan.style.display = 'block';
+            inputElement.style.display = 'none';
+
+            // برگردوندن مقدار اصلی
+            const fieldName = activeField.dataset.field;
+            if (originalValues[fieldName] && originalValues[fieldName] !== '') {
+                displaySpan.innerText = originalValues[fieldName];
+                displaySpan.classList.remove('empty');
+            } else {
+                displaySpan.innerText = '➕ برای افزودن کلیک کنید';
+                displaySpan.classList.add('empty');
+            }
+
+            activeField = null;
+        }
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+        cancelCurrentEdit();
+        document.getElementById('actionButtons').style.display = 'none';
+    });
+
+    // وقتی فرم سابمیت میشه، مقادیر inputها رو به display-span منتقل کن
+    document.getElementById('addressForm').addEventListener('submit', function (e) {
+        const allFields = document.querySelectorAll('.address-field');
+        allFields.forEach(field => {
+            const input = field.querySelector('.address-input');
+            const display = field.querySelector('.display-text');
+            if (input && input.value.trim() !== '') {
+                display.innerText = input.value;
+                display.classList.remove('empty');
+            } else if (input && input.value.trim() === '') {
+                display.innerText = '➕ برای افزودن کلیک کنید';
+                display.classList.add('empty');
+            }
+            // اطمینان از اینکه input مقدار صحیح رو ارسال کنه
+            if (input && input.style.display === 'none') {
+                // input مخفی هست ولی مقدارش باید ارسال بشه
+            }
+        });
+    });
+
+    // دکمه افزودن آدرس جدید - همه فیلدها رو خالی می‌کنه
+    document.getElementById('addNewBtn').addEventListener('click', function () {
+        const allFields = document.querySelectorAll('.address-field');
+        allFields.forEach(field => {
+            const display = field.querySelector('.display-text');
+            const input = field.querySelector('.address-input');
+            if (input) {
+                input.value = '';
+                display.innerText = '➕ برای افزودن کلیک کنید';
+                display.classList.add('empty');
+            }
+        });
+
+        // فعال کردن اولین فیلد
+        const firstField = document.querySelector('.address-field');
+        if (firstField) {
+            activateField(firstField);
+        }
+
+        // نمایش پیام
+        const toast = document.createElement('div');
+        toast.className = 'alert-message alert-success';
+        toast.innerHTML = '✨ برای افزودن آدرس جدید، روی هر باکس کلیک کنید و اطلاعات را وارد کنید';
+        document.querySelector('.address-content').insertBefore(toast, document.querySelector('#addressForm'));
+        setTimeout(() => toast.remove(), 3000);
+    });
+</script>
+
+<!-- فوتر (همون کد فوتر خودت) -->
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s;
+    }
+
+    .loading-logo {
+        width: 100px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .loading-dots span {
+        width: 12px;
+        height: 12px;
+        background: #004cff;
+        border-radius: 50%;
+        animation: bounce 0.8s infinite;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        color: #004cff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <img src="/static/images/logo/Kit.png.jpeg" alt="لوگو" class="loading-logo">
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">در حال بارگذاری...</div>
+    </div>
+</div>
+
+<script>
+    // ==================== لودینگ ====================
+    let loadingTimeout = null;
+
+    function showLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+        }
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    window.addEventListener('load', function () {
+        hideLoading();
+    });
+
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:')) {
+            const currentDomain = window.location.origin;
+            if (link.href.startsWith(currentDomain) || link.href.startsWith('/')) {
+                if (!link.hasAttribute('data-no-loading')) {
+                    showLoading();
+                }
+            }
+        }
+    });
+
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    window.addEventListener('popstate', function () {
+        hideLoading();
+    });
+
+    // ==================== فرم افزودن آدرس ====================
+    document.addEventListener('DOMContentLoaded', function () {
+        const addNewBtn = document.getElementById('addNewBtn');
+        const cancelAddBtn = document.getElementById('cancelAddBtn');
+        const addAddressForm = document.getElementById('addAddressForm');
+
+        if (addNewBtn && addAddressForm) {
+            addNewBtn.addEventListener('click', function () {
+                if (addAddressForm.style.display === 'none') {
+                    addAddressForm.style.display = 'block';
+                } else {
+                    addAddressForm.style.display = 'none';
+                }
+            });
+        }
+
+        if (cancelAddBtn && addAddressForm) {
+            cancelAddBtn.addEventListener('click', function () {
+                addAddressForm.style.display = 'none';
+            });
+        }
+    });
+
+    // ==================== استان و شهر ====================
+    document.addEventListener('DOMContentLoaded', function () {
+        const iranCities = {
+            "آذربایجان شرقی": ["تبریز", "مراغه", "مرند", "میانه"],
+            "آذربایجان غربی": ["ارومیه", "خوی", "بوکان", "مهاباد"],
+            "اردبیل": ["اردبیل", "پارس آباد", "مشگین شهر"],
+            "اصفهان": ["اصفهان", "کاشان", "خمینی شهر", "نجف آباد"],
+            "البرز": ["کرج", "نظرآباد", "هشتگرد"],
+            "ایلام": ["ایلام", "دهلران", "مهران"],
+            "بوشهر": ["بوشهر", "برازجان", "گناوه"],
+            "تهران": ["تهران", "ری", "شهریار", "اسلامشهر", "ورامین"],
+            "چهارمحال و بختیاری": ["شهرکرد", "بروجن", "فارسان"],
+            "خراسان جنوبی": ["بیرجند", "قائن", "فردوس"],
+            "خراسان رضوی": ["مشهد", "نیشابور", "سبزوار", "تربت حیدریه"],
+            "خراسان شمالی": ["بجنورد", "شیروان", "اسفراین"],
+            "خوزستان": ["اهواز", "آبادان", "دزفول", "خرمشهر"],
+            "زنجان": ["زنجان", "ابهر", "خرمدره"],
+            "سمنان": ["سمنان", "شاهرود", "دامغان"],
+            "سیستان و بلوچستان": ["زاهدان", "چابهار", "زابل", "ایرانشهر"],
+            "فارس": ["شیراز", "مرودشت", "جهرم", "کازرون"],
+            "قزوین": ["قزوین", "الوند", "تاکستان"],
+            "قم": ["قم", "جعفریه"],
+            "کردستان": ["سنندج", "سقز", "مریوان", "بانه"],
+            "کرمان": ["کرمان", "سیرجان", "رفسنجان", "بم"],
+            "کرمانشاه": ["کرمانشاه", "اسلام‌آباد غرب", "هرسین"],
+            "کهگیلویه و بویراحمد": ["یاسوج", "گچساران", "دوگنبدان"],
+            "گلستان": ["گرگان", "گنبد کاووس", "علی آباد"],
+            "گیلان": ["رشت", "انزلی", "لاهیجان", "آستارا"],
+            "لرستان": ["خرم آباد", "بروجرد", "دورود"],
+            "مازندران": ["ساری", "بابل", "آمل", "قائم‌شهر"],
+            "مرکزی": ["اراک", "ساوه", "خمین"],
+            "هرمزگان": ["بندرعباس", "قشم", "کیش"],
+            "همدان": ["همدان", "ملایر", "نهاوند"],
+            "یزد": ["یزد", "اردکان", "میبد"]
+        };
+
+        const provinceSelect = document.getElementById('provinceSelect');
+        const citySelect = document.getElementById('citySelect');
+
+        if (provinceSelect && citySelect) {
+            for (const province in iranCities) {
+                const option = document.createElement('option');
+                option.value = province;
+                option.text = province;
+                provinceSelect.appendChild(option);
+            }
+
+            provinceSelect.addEventListener('change', function () {
+                const selectedProvince = this.value;
+                citySelect.innerHTML = '<option value="">انتخاب شهر</option>';
+                citySelect.disabled = true;
+
+                if (selectedProvince && iranCities[selectedProvince]) {
+                    const cities = iranCities[selectedProvince];
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.text = city;
+                        citySelect.appendChild(option);
+                    });
+                    citySelect.disabled = false;
+                }
+            });
+        }
+    });
+
+    // ==================== حذف آدرس ====================
+    var pendingDeleteId = null;
+
+    function confirmDelete(addressId, element) {
+        pendingDeleteId = addressId;
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+        return false;
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        pendingDeleteId = null;
+    }
+
+    function executeDelete() {
+        if (pendingDeleteId) {
+            window.location.href = '?delete=' + pendingDeleteId;
+            closeModal();
+        }
+    }
+
+    // نمایش پیام موفقیت
+    // نمایش پیام موفقیت با بک‌گراند قرمز
+    {#function showDeleteSuccess(message) {#}
+    {#    var msg = document.createElement('div');#}
+    {#    msg.className = 'delete-success-msg';#}
+    {#    msg.innerHTML = '🗑 ' + (message || 'آدرس با موفقیت حذف شد');#}
+    {#    document.body.appendChild(msg);#}
+    {#    setTimeout(function () {#}
+    {#        if (msg && msg.remove) msg.remove();#}
+    {#    }, 3000);#}
+    {#}#}
+
+    // چک کردن پیام از سمت سرور
+{#    {% if messages %}#}
+{#        {% for message in messages %}#}
+{#            showDeleteSuccess('{{ message }}');#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+</script>
+<div id="deleteModal" class="custom-modal">
+    <div class="custom-modal-content">
+        <h3>🗑 حذف آدرس</h3>
+        <p>آیا از حذف این آدرس اطمینان داری؟</p>
+        <div class="custom-modal-buttons">
+            <button class="cancel-delete-btn" onclick="closeModal()">لغو</button>
+            <button class="confirm-delete-btn" onclick="executeDelete()">بله، حذف کن</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
