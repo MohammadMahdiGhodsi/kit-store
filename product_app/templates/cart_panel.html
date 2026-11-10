@@ -1,0 +1,70 @@
+<!-- پنل سبد خرید کناری -->
+<div id="cartPanel" class="cart-panel-sidebar"
+     style="position: fixed; top: 0; right: -380px; width: 380px; height: 100%; background: white; z-index: 10001; transition: right 0.3s ease; box-shadow: -2px 0 10px rgba(0,0,0,0.1); overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee;">
+        <span style="font-size: 18px; font-weight: bold;">🛒 سبد خرید</span>
+        <button onclick="closeCartPanel()" style="background: none; border: none; font-size: 28px; cursor: pointer;">
+            &times;
+        </button>
+    </div>
+
+    {% if user.is_authenticated %}
+        {% if cart and cart.items.all %}
+            <div style="padding: 15px;">
+                {% for item in cart.items.all %}
+                    <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eee;">
+                        <img src="{{ item.product.get_main_image }}"
+                             style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px; font-size: 14px;">{{ item.product.title|truncatechars:25 }}</h4>
+                            <p style="margin: 2px 0; font-size: 12px; color: #666;">رنگ: {{ item.color|default:"-" }} |
+                                سایز: {{ item.size|default:"-" }}</p>
+                            <p style="margin: 2px 0; font-size: 13px;">{{ item.quantity }} × {{ item.product.price }}
+                                تومان</p>
+                        </div>
+                        <div style="text-align: left;">
+                            <strong style="color: #004cff;">{{ item.get_total_price }} تومان</strong>
+                            <a href="{% url 'remove_cart_item' item.id %}"
+                               style="display: block; color: red; font-size: 11px;">حذف</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div style="padding: 15px; border-top: 1px solid #eee;">
+                <p><strong>مجموع: {{ cart.get_total_price }} تومان</strong></p>
+                <a href="{% url 'checkout' %}"
+                   style="display: block; background: #004cff; color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none;">پرداخت</a>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 50px;">
+                <p>🛒 سبد خرید خالی است</p>
+                <a href="{% url 'product_list' %}" style="color: #004cff;">مشاهده محصولات</a>
+            </div>
+        {% endif %}
+    {% else %}
+        <div style="text-align: center; padding: 50px;">
+            <p>برای مشاهده سبد خرید وارد شوید</p>
+            <a href="{% url 'accounts_app:login' %}"
+               style="background: #004cff; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none;">ورود</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function openCartPanel() {
+        document.getElementById('cartPanel').style.right = '0';
+    }
+
+    function closeCartPanel() {
+        document.getElementById('cartPanel').style.right = '-380px';
+    }
+
+    function toggleCart() {
+        var panel = document.getElementById('cartPanel');
+        if (panel.style.right === '0px') {
+            panel.style.right = '-380px';
+        } else {
+            panel.style.right = '0';
+        }
+    }
+</script>

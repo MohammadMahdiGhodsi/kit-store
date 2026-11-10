@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category.name }} | نازاستور</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store.css' %}">
+    <style>
+        /* استایل‌های مخصوص صفحه دسته‌بندی */
+        .category-header {
+            background: linear-gradient(135deg, #004cff 0%, #0066ff 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .category-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .category-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .subcategories-section {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            padding: 0 20px;
+        }
+
+        .subcategories-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-right: 15px;
+        }
+
+        .subcategories-title::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: #004cff;
+            border-radius: 5px;
+        }
+
+        .subcategories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .subcategory-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 76, 255, 0.08);
+        }
+
+        .subcategory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 76, 255, 0.15);
+            border-color: #004cff;
+        }
+
+        .subcategory-icon {
+            width: 50px;
+            height: 50px;
+            background: #f0f5ff;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #004cff;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .subcategory-name {
+            font-weight: bold;
+            color: #004cff;
+            margin-bottom: 5px;
+        }
+
+        .subcategory-count {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .products-header {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .products-count {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .products-count span {
+            color: #004cff;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .sort-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sort-select {
+            padding: 8px 15px;
+            border: 1px solid #eef2f6;
+            border-radius: 8px;
+            color: #333;
+            font-size: 0.95rem;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .sort-select:focus {
+            border-color: #004cff;
+        }
+
+        .products-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #eef2f6;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 76, 255, 0.15);
+            border-color: #004cff;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #004cff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .product-image {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .current-price {
+            color: #004cff;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .old-price {
+            color: #999;
+            font-size: 0.9rem;
+            text-decoration: line-through;
+        }
+
+        .add-to-cart {
+            background: #004cff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .add-to-cart:hover {
+            background: #0033cc;
+        }
+
+        .add-to-cart svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .empty-message svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            fill: #004cff;
+            opacity: 0.3;
+        }
+
+        .breadcrumb {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #004cff;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .category-header h1 {
+                font-size: 2rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .product-image {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- هدر دسکتاپ (همون هدر خودت) -->
+<header class="header">
+    <div class="logo-top">
+        <h2>
+            <span class="logo-blue">نآز</span><span class="logo-gray">استور</span>
+        </h2>
+    </div>
+
+    <!-- بقیه هدر مثل همون product-list.html خودت -->
+</header>
+
+<!-- منوی موبایل -->
+<nav class="nav-menu-mobile" id="navMenu">
+    <!-- کد منوی موبایل خودت -->
+</nav>
+
+<!-- دکمه‌های پایین -->
+<div class="button-container">
+    <!-- دکمه‌های خودت -->
+</div>
+
+<!-- مسیر صفحه (breadcrumb) -->
+<div class="breadcrumb">
+    <a href="/">خانه</a> ›
+    <a href="/products/">فروشگاه</a> ›
+    <span>{{ category.name }}</span>
+</div>
+
+<!-- هدر دسته‌بندی -->
+<div class="category-header">
+    <h1>{{ category.name }}</h1>
+    {% if category.description %}
+        <p>{{ category.description }}</p>
+    {% endif %}
+</div>
+
+<!-- زیردسته‌ها (اگه وجود داشته باشن) -->
+{% if subcategories %}
+    <div class="subcategories-section">
+        <h3 class="subcategories-title">زیردسته‌های {{ category.name }}</h3>
+        <div class="subcategories-grid">
+            {% for sub in subcategories %}
+                <a href="{{ sub.get_absolute_url }}" class="subcategory-card">
+                    <div class="subcategory-icon">
+                        {% if sub.image %}
+                            <img src="{{ sub.image.url }}" alt="{{ sub.name }}"
+                                 style="width: 30px; height: 30px; border-radius: 50%;">
+                        {% else %}
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+                            </svg>
+                        {% endif %}
+                    </div>
+                    <div class="subcategory-name">{{ sub.name }}</div>
+                    <div class="subcategory-count">{{ sub.products.count }} محصول</div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+<!-- هدر محصولات -->
+<div class="products-header">
+    <div class="products-count">
+        <span>{{ products.count }}</span> محصول در دسته {{ category.name }}
+    </div>
+    <div class="sort-box">
+        <select class="sort-select" id="sortProducts">
+            <option value="default">مرتب‌سازی پیش‌فرض</option>
+            <option value="newest">جدیدترین</option>
+            <option value="price-asc">ارزان‌ترین</option>
+            <option value="price-desc">گران‌ترین</option>
+            <option value="popular">محبوب‌ترین</option>
+        </select>
+    </div>
+</div>
+
+<!-- لیست محصولات -->
+<div class="products-grid">
+    {% for product in products %}
+        <a href="/products/detail/{{ product.id }}/" class="product-card">
+            {% if product.discount %}
+                <div class="product-badge">{{ product.discount }}% تخفیف</div>
+            {% endif %}
+
+            <div class="product-image">
+                {% if product.main_image %}
+                    <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% else %}
+                    <img src="/static/images/default.jpg" alt="{{ product.title }}">
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <h3 class="product-title">{{ product.title|truncatechars:40 }}</h3>
+
+                {% if product.colors %}
+                    <div style="margin: 10px 0; display: flex; gap: 5px;">
+                        {% for color in product.colors.split|slice:":3" %}
+                            <span style="display: inline-block; width: 15px; height: 15px; background: {{ color }}; border-radius: 50%; border: 1px solid #ddd;"></span>
+                        {% endfor %}
+                        {% if product.colors.split|length > 3 %}
+                            <span style="color: #666; font-size: 0.8rem;">+{{ product.colors.split|length|add:"-3" }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="product-price">
+                    <div>
+                        <span class="current-price">{{ product.price }}</span>
+                        <span style="font-size: 0.8rem; color: #666;">تومان</span>
+                        {% if product.old_price %}
+                            <div class="old-price">{{ product.old_price }} تومان</div>
+                        {% endif %}
+                    </div>
+
+                    <button class="add-to-cart" onclick="event.preventDefault(); addToCart({{ product.id }})">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                        </svg>
+                        افزودن
+                    </button>
+                </div>
+            </div>
+        </a>
+    {% empty %}
+        <div class="empty-message">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+            </svg>
+            <p>هیچ محصولی در این دسته‌بندی یافت نشد.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- فوتر -->
+<footer class="kitstore-footer">
+    <div class="footer-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h3>درباره کیت استور</h3>
+            <p>کیت استور با هدف ارائه بهترین محصولات با ضمانت اصالت، ارسال سریع و پشتیبانی ۲۴ ساعته راه‌اندازی شده است.
+                ما به تجربه خریدی امن و لذت‌بخش برای شما متعهدیم.</p>
+        </div>
+        <div class="footer-section links">
+            <h3>دسترسی سریع</h3>
+            <ul>
+                <li><a href="/">صفحه اصلی</a></li>
+                <li><a href="{% url 'product_list' %}">فروشگاه</a></li>
+                <li><a href="{% url 'cart_detail' %}">سبد خرید</a></li>
+                <li><a href="{% url 'about-us' %}">درباره ما</a></li>
+
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h3 style="color: black;">تماس با ما</h3>
+            <p style="color: black;">09383150031 :📞 شماره تماس</p>
+            <p style="color: black;">mmdghods@gmail.com:📧 ایمیل</p>
+            <p style="color: black;">سبزوار , خیابان مطهری 21 :📍 آدرس</p>
+        </div>
+        <div class="footer-section trust">
+            <h3>نماد اعتماد</h3>
+            <img src="/static/images/namad/c3.webp" alt="نماد ساماندهی" class="trust-img">
+            <img src="/static/images/namad/namad.png" alt="نماد اعتماد" class="trust-img">
+            <img src="/static/images/namad/named2.png" alt="نماد ساماندهی" class="trust-img">
+        </div>
+    </div>
+    <div class="footer-copyright"
+         style="text-align: center; padding: 20px 15px 10px; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 20px;">
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+            تمامی حقوق این سایت متعلق به <strong style="color: #004cff;">محمد مهدی قدسی</strong> می‌باشد.
+        </p>
+        <p style="margin: 5px 0; font-size: 12px; color: #8899aa;">
+            طراحی و توسعه توسط محمد مهدی قدسی
+        </p>
+    </div>
+</footer>
+
+<script src="{% static 'js/script.js' %}"></script>
+<script>
+    function addToCart(productId) {
+        // تابع اضافه کردن به سبد خرید
+        console.log('محصول ' + productId + ' به سبد خرید اضافه شد');
+        // اینجا می‌تونی کد AJAX بزنی
+    }
+
+    // مرتب‌سازی محصولات
+    document.getElementById('sortProducts').addEventListener('change', function () {
+        const sortValue = this.value;
+        // اینجا می‌تونی با AJAX محصولات رو مرتب کنی
+        console.log('مرتب‌سازی بر اساس: ' + sortValue);
+    });
+</script>
+<script>
+    // تابع اضافه کردن کاما به عدد
+    function numberWithCommas(x) {
+        if (x === null || x === undefined) return '';
+        // اگه عدد بود
+        if (typeof x === 'number') {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        // اگه رشته بود
+        x = x.toString().trim();
+        // حذف کاماهای قبلی
+        x = x.replace(/,/g, '');
+        // اگه فقط عدد هست
+        if (!isNaN(x) && x !== '') {
+            return Number(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        // اگه متن + عدد هست (مثل "10,000 تومان")
+        const match = x.match(/(.*?)(\d+)(.*)/);
+        if (match) {
+            const prefix = match[1];
+            const number = match[2];
+            const suffix = match[3];
+            return prefix + Number(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + suffix;
+        }
+        return x;
+    }
+
+    // اجرا بعد از لود کامل صفحه
+    document.addEventListener('DOMContentLoaded', function () {
+        // همه المان‌هایی که احتمالاً قیمت دارن
+        const priceElements = document.querySelectorAll(
+            '.price, .new-price, .old-price, .price1, .price2, ' +
+            '.new-price1, .old-price1, .total-price, #total, ' +
+            '.product-price, .shoe-price, .cart-price, ' +
+            '[class*="price"]:not(.no-format), [id*="total"]'
+        );
+
+        priceElements.forEach(el => {
+            if (el.innerText && !el.classList.contains('no-format')) {
+                const originalText = el.innerText;
+                const formattedText = numberWithCommas(originalText);
+                if (formattedText !== originalText) {
+                    el.innerText = formattedText;
+                }
+            }
+        });
+    });
+
+    // به‌روزرسانی داینامیک برای المان‌های جدید
+    function formatPrices() {
+        document.querySelectorAll('.price, .new-price, .old-price, #total').forEach(el => {
+            if (el.innerText) {
+                el.innerText = numberWithCommas(el.innerText);
+            }
+        });
+    }
+
+    // اگه از + و - استفاده می‌کنی، بعد از تغییر تعداد صدا بزن
+    // formatPrices();
+</script>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s;
+    }
+
+    .loading-logo {
+        width: 100px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .loading-dots span {
+        width: 12px;
+        height: 12px;
+        background: #004cff;
+        border-radius: 50%;
+        animation: bounce 0.8s infinite;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        color: #004cff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <img src="/static/images/logo/Kit.png.jpeg" alt="لوگو" class="loading-logo">
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">در حال بارگذاری...</div>
+    </div>
+</div>
+
+<script>
+    let loadingTimeout = null;
+
+    function showLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+        }
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // وقتی صفحه کامل لود شد، لودینگ رو مخفی کن
+    window.addEventListener('load', function () {
+        hideLoading();
+    });
+
+    // فقط برای لینک‌های داخلی (به جز دکمه بازگشت)
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:')) {
+            // چک کردن اینکه لینک خارجی نیست
+            const currentDomain = window.location.origin;
+            if (link.href.startsWith(currentDomain) || link.href.startsWith('/')) {
+                // جلوگیری از اجرا روی دکمه بازگشت (history.back)
+                if (!link.hasAttribute('data-no-loading')) {
+                    showLoading();
+                }
+            }
+        }
+    });
+
+    // برای دکمه بازگشت مرورگر
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    // برای popstate (وقتی کاربر با دکمه عقب/جلو میره)
+    window.addEventListener('popstate', function () {
+        hideLoading();
+    });
+</script>
+</body>
+</html>

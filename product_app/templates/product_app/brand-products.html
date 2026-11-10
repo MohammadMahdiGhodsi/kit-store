@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ brand.name }} | محصولات برند</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/store.css' %}">
+    <style>
+        /* استایل‌های اختصاصی صفحه برند */
+        .brand-header {
+            background: linear-gradient(135deg, #004cff, #0066ff);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .brand-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            margin-bottom: 15px;
+            object-fit: cover;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-name {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-count {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .breadcrumb {
+            padding: 15px 20px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #004cff;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* گرید محصولات با سایز کوچکتر */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* کارت محصول کوچکتر */
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #f0f0f0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 76, 255, 0.15);
+            border-color: #004cff;
+        }
+
+        .product-image {
+            height: 150px; /* کوچکتر */
+            overflow: hidden;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 12px;
+        }
+
+        .product-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 0 0 8px;
+            color: #333;
+            line-height: 1.4;
+            height: 38px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-price {
+            color: #004cff;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .product-price small {
+            font-size: 0.7rem;
+            font-weight: normal;
+            color: #666;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            font-size: 1.2rem;
+            grid-column: 1/-1;
+        }
+
+        .empty-message svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            fill: #004cff;
+            opacity: 0.3;
+        }
+
+        /* برندهای دیگر (پیشنهادی) */
+        .other-brands {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .other-brands h3 {
+            color: #333;
+            margin-bottom: 20px;
+            position: relative;
+            padding-right: 15px;
+        }
+
+        .other-brands h3::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: #004cff;
+            border-radius: 5px;
+        }
+
+        .brands-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .brand-item {
+            background: #f5f5f5;
+            padding: 8px 20px;
+            border-radius: 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .brand-item:hover {
+            background: #004cff;
+            color: white;
+            border-color: #004cff;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+            }
+
+            .product-image {
+                height: 120px;
+            }
+
+            .brand-name {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- هدر (مثل بقیه صفحات) -->
+<header class="header">
+    <div class="logo-top">
+        <h2>
+            <span class="logo-blue">نآز</span><span class="logo-gray">استور</span>
+        </h2>
+    </div>
+    <!-- بقیه هدر مثل همیشه -->
+</header>
+
+<!-- مسیر صفحه -->
+<div class="breadcrumb">
+    <a href="{% url 'home-page' %}">خانه</a> ›
+    <a href="{% url 'product_list' %}">فروشگاه</a> ›
+    <span>برند {{ brand.name }}</span>
+</div>
+
+<!-- هدر برند -->
+<div class="brand-header">
+    {% if brand.logo %}
+        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
+    {% endif %}
+    <h1 class="brand-name">{{ brand.name }}</h1>
+    <p class="brand-count">{{ products.count }} محصول</p>
+</div>
+
+<!-- لیست محصولات با سایز کوچک -->
+<div class="products-grid">
+    {% for product in products %}
+        <a href="/products/detail/{{ product.id }}/" class="product-card">
+            <div class="product-image">
+                {% if product.main_image %}
+                    <img src="{{ product.main_image.url }}" alt="{{ product.title }}">
+                {% else %}
+                    <img src="{% static 'images/no-image.jpg' %}" alt="بدون تصویر">
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">{{ product.title|truncatechars:40 }}</h3>
+                <p class="product-price">{{ product.price }} <small>تومان</small></p>
+            </div>
+        </a>
+    {% empty %}
+        <div class="empty-message">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+            </svg>
+            <p>هیچ محصولی از برند {{ brand.name }} یافت نشد</p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- فوتر -->
+<footer class="kitstore-footer">
+    <div class="footer-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h3>درباره کیت استور</h3>
+            <p>کیت استور با هدف ارائه بهترین محصولات با ضمانت اصالت، ارسال سریع و پشتیبانی ۲۴ ساعته راه‌اندازی شده است.
+                ما به تجربه خریدی امن و لذت‌بخش برای شما متعهدیم.</p>
+        </div>
+        <div class="footer-section links">
+            <h3>دسترسی سریع</h3>
+            <ul>
+                <li><a href="/">صفحه اصلی</a></li>
+                <li><a href="{% url 'product_list' %}">فروشگاه</a></li>
+                <li><a href="{% url 'cart_detail' %}">سبد خرید</a></li>
+                <li><a href="{% url 'about-us' %}">درباره ما</a></li>
+
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h3 style="color: black;">تماس با ما</h3>
+            <p style="color: black;">09383150031 :📞 شماره تماس</p>
+            <p style="color: black;">mmdghods@gmail.com:📧 ایمیل</p>
+            <p style="color: black;">سبزوار , خیابان مطهری 21 :📍 آدرس</p>
+        </div>
+        <div class="footer-section trust">
+            <h3>نماد اعتماد</h3>
+            <img src="/static/images/namad/c3.webp" alt="نماد ساماندهی" class="trust-img">
+            <img src="/static/images/namad/namad.png" alt="نماد اعتماد" class="trust-img">
+            <img src="/static/images/namad/named2.png" alt="نماد ساماندهی" class="trust-img">
+        </div>
+    </div>
+    <div class="footer-copyright"
+         style="text-align: center; padding: 20px 15px 10px; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 20px;">
+        <p style="margin: 5px 0; font-size: 13px; color: #666;">
+            تمامی حقوق این سایت متعلق به <strong style="color: #004cff;">محمد مهدی قدسی</strong> می‌باشد.
+        </p>
+        <p style="margin: 5px 0; font-size: 12px; color: #8899aa;">
+            طراحی و توسعه توسط محمد مهدی قدسی
+        </p>
+    </div>
+</footer>
+<script>
+    // تابع اضافه کردن کاما به عدد
+    function numberWithCommas(x) {
+        if (x === null || x === undefined) return '';
+        // اگه عدد بود
+        if (typeof x === 'number') {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        // اگه رشته بود
+        x = x.toString().trim();
+        // حذف کاماهای قبلی
+        x = x.replace(/,/g, '');
+        // اگه فقط عدد هست
+        if (!isNaN(x) && x !== '') {
+            return Number(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        // اگه متن + عدد هست (مثل "10,000 تومان")
+        const match = x.match(/(.*?)(\d+)(.*)/);
+        if (match) {
+            const prefix = match[1];
+            const number = match[2];
+            const suffix = match[3];
+            return prefix + Number(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + suffix;
+        }
+        return x;
+    }
+
+    // اجرا بعد از لود کامل صفحه
+    document.addEventListener('DOMContentLoaded', function () {
+        // همه المان‌هایی که احتمالاً قیمت دارن
+        const priceElements = document.querySelectorAll(
+            '.price, .new-price, .old-price, .price1, .price2, ' +
+            '.new-price1, .old-price1, .total-price, #total, ' +
+            '.product-price, .shoe-price, .cart-price, ' +
+            '[class*="price"]:not(.no-format), [id*="total"]'
+        );
+
+        priceElements.forEach(el => {
+            if (el.innerText && !el.classList.contains('no-format')) {
+                const originalText = el.innerText;
+                const formattedText = numberWithCommas(originalText);
+                if (formattedText !== originalText) {
+                    el.innerText = formattedText;
+                }
+            }
+        });
+    });
+
+    // به‌روزرسانی داینامیک برای المان‌های جدید
+    function formatPrices() {
+        document.querySelectorAll('.price, .new-price, .old-price, #total').forEach(el => {
+            if (el.innerText) {
+                el.innerText = numberWithCommas(el.innerText);
+            }
+        });
+    }
+
+    // اگه از + و - استفاده می‌کنی، بعد از تغییر تعداد صدا بزن
+    // formatPrices();
+</script>
+</body>
+</html>
