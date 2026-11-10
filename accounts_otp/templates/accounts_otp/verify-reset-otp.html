@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تایید کد | نازاستور</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #004cff 0%, #6b9fff 50%, #f0f4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 5%;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 15%;
+            right: 5%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .form {
+            background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+            padding: 40px 35px;
+            border-radius: 32px;
+            width: 500px;
+            max-width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(0, 76, 255, 0.1);
+            text-align: center;
+        }
+
+        .form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 76, 255, 0.2);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #004cff, #6b9fff);
+            border-radius: 22px;
+            padding: 15px;
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(0, 76, 255, 0.3);
+        }
+
+        .form-title {
+            color: #1a2a4f;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 12px 0 5px;
+        }
+
+        .form-subtitle {
+            color: #6a7c9f;
+            font-size: 0.85rem;
+        }
+
+        .flex-column {
+            margin-bottom: 20px;
+        }
+
+        .flex-column label {
+            font-weight: 600;
+            color: #1a2a4f;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .hint {
+            color: #6a7c9f;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            background: #f5f7fc;
+            padding: 10px 15px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .phone-highlight {
+            color: #004cff;
+            font-weight: 600;
+        }
+
+        .otp-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0;
+            direction: ltr;
+        }
+
+        .otp-box {
+            width: 55px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            border: 2px solid #e0e6f0;
+            border-radius: 16px;
+            background: #f5f7fc;
+            transition: all 0.3s;
+            outline: none;
+            color: #1a2a4f;
+            font-family: monospace;
+        }
+
+        .otp-box:focus {
+            border-color: #004cff;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 76, 255, 0.1);
+        }
+
+        .button-submit {
+            background: linear-gradient(135deg, #004cff, #006eff);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .button-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 76, 255, 0.4);
+        }
+
+        .timer-section {
+            background: #f5f7fc;
+            padding: 15px;
+            border-radius: 16px;
+            margin-top: 15px;
+        }
+
+        .timer {
+            color: #004cff;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .resend-link {
+            color: #004cff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .resend-link:hover {
+            color: #0033cc;
+            text-decoration: underline;
+        }
+
+        .disabled-link {
+            color: #b0bed6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .p {
+            text-align: center;
+            color: #6a7c9f;
+            margin: 0;
+        }
+
+        .alert {
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            border-right: 4px solid #4caf50;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #c62828;
+            border-right: 4px solid #f44336;
+        }
+
+        @media (max-width: 550px) {
+            .form {
+                padding: 25px 20px;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .otp-box {
+                width: 45px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .otp-inputs {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<form class="form" method="post" onsubmit="combineOtp(); return true;">
+    {% csrf_token %}
+
+    <div class="form-header">
+        <div class="form-logo">
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2 class="form-title">کد تایید</h2>
+        <p class="form-subtitle">لطفاً کد ارسال شده به شماره تلفن خود را وارد کنید</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="flex-column">
+        <label>کد 6 رقمی را وارد کنید</label>
+        <div class="hint">
+            📱 کد به شماره
+            <span class="phone-highlight">{{ phone }}</span>
+            ارسال شد
+        </div>
+    </div>
+
+    <div class="otp-inputs">
+        <input type="text" name="otp_1" id="otp_1" maxlength="1" class="otp-box" autofocus/>
+        <input type="text" name="otp_2" id="otp_2" maxlength="1" class="otp-box"/>
+        <input type="text" name="otp_3" id="otp_3" maxlength="1" class="otp-box"/>
+        <input type="text" name="otp_4" id="otp_4" maxlength="1" class="otp-box"/>
+        <input type="text" name="otp_5" id="otp_5" maxlength="1" class="otp-box"/>
+        <input type="text" name="otp_6" id="otp_6" maxlength="1" class="otp-box"/>
+    </div>
+
+    <input type="hidden" name="otp_code" id="otpCode">
+
+    <button class="button-submit" type="submit">
+        تایید و ادامه
+    </button>
+
+    <div class="timer-section">
+        <p class="p">
+            کد دریافت نکردید؟
+            <a href="{% url 'accounts_otp:forgot_password' %}" class="resend-link" id="resendLink">ارسال مجدد کد</a>
+        </p>
+        <p class="p" style="margin-top: 10px;">
+            زمان باقی‌مانده: <span class="timer" id="timer">02:00</span>
+        </p>
+    </div>
+</form>
+
+<script>
+    // حرکت خودکار بین باکس‌های OTP
+    for (let i = 1; i <= 6; i++) {
+        const input = document.getElementById(`otp_${i}`);
+
+        input.addEventListener('input', function () {
+            if (this.value.length === 1 && i < 6) {
+                document.getElementById(`otp_${i + 1}`).focus();
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && this.value === '' && i > 1) {
+                document.getElementById(`otp_${i - 1}`).focus();
+            }
+        });
+
+        input.addEventListener('keypress', function (e) {
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    function combineOtp() {
+        let otp = '';
+        for (let i = 1; i <= 6; i++) {
+            otp += document.getElementById(`otp_${i}`).value;
+        }
+        document.getElementById('otpCode').value = otp;
+        return true;
+    }
+
+    // تایمر 2 دقیقه‌ای
+    let timeLeft = 120;
+    const timerElement = document.getElementById('timer');
+    const resendLink = document.getElementById('resendLink');
+
+    function updateTimer() {
+        if (timeLeft <= 0) {
+            timerElement.textContent = '00:00';
+            if (resendLink) {
+                resendLink.style.pointerEvents = 'auto';
+                resendLink.classList.remove('disabled-link');
+            }
+            return;
+        }
+
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (resendLink && timeLeft > 0) {
+            resendLink.style.pointerEvents = 'none';
+            resendLink.classList.add('disabled-link');
+        }
+
+        timeLeft--;
+        setTimeout(updateTimer, 1000);
+    }
+
+    updateTimer();
+</script>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s;
+    }
+
+    .loading-logo {
+        width: 100px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .loading-dots span {
+        width: 12px;
+        height: 12px;
+        background: #004cff;
+        border-radius: 50%;
+        animation: bounce 0.8s infinite;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        color: #004cff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <img src="/static/images/logo/Kit.png.jpeg" alt="لوگو" class="loading-logo">
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">در حال بارگذاری...</div>
+    </div>
+</div>
+
+<script>
+    let loadingTimeout = null;
+
+    function showLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+        }
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // وقتی صفحه کامل لود شد، لودینگ رو مخفی کن
+    window.addEventListener('load', function () {
+        hideLoading();
+    });
+
+    // فقط برای لینک‌های داخلی (به جز دکمه بازگشت)
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:')) {
+            // چک کردن اینکه لینک خارجی نیست
+            const currentDomain = window.location.origin;
+            if (link.href.startsWith(currentDomain) || link.href.startsWith('/')) {
+                // جلوگیری از اجرا روی دکمه بازگشت (history.back)
+                if (!link.hasAttribute('data-no-loading')) {
+                    showLoading();
+                }
+            }
+        }
+    });
+
+    // برای دکمه بازگشت مرورگر
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    // برای popstate (وقتی کاربر با دکمه عقب/جلو میره)
+    window.addEventListener('popstate', function () {
+        hideLoading();
+    });
+</script>
+</body>
+</html>

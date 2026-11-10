@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت نام | نازاستور</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #004cff 0%, #6b9fff 50%, #f0f4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'IRANSans', 'Tahoma', 'Segoe UI', system-ui, sans-serif;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* دایره‌های تزئینی پس زمینه */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 10%;
+            right: 5%;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .form {
+            background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+            padding: 40px 35px;
+            border-radius: 32px;
+            width: 500px;
+            max-width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(0, 76, 255, 0.1);
+        }
+
+        .form:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 76, 255, 0.2);
+        }
+
+        /* هدر فرم */
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-logo {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #004cff, #6b9fff);
+            border-radius: 25px;
+            padding: 15px;
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(0, 76, 255, 0.3);
+        }
+
+        .form-title {
+            color: #1a2a4f;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 15px 0 5px;
+        }
+
+        .form-subtitle {
+            color: #6a7c9f;
+            font-size: 0.85rem;
+        }
+
+        /* فیلدها */
+        .flex-column {
+            margin-bottom: 5px;
+        }
+
+        .flex-column label {
+            font-weight: 600;
+            color: #1a2a4f;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.85rem;
+        }
+
+        .inputForm {
+            background-color: #f5f7fc;
+            border-radius: 14px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .inputForm:focus-within {
+            border-color: #004cff;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 76, 255, 0.1);
+        }
+
+        .inputForm svg {
+            flex-shrink: 0;
+        }
+
+        .input-login {
+            width: 100%;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.95rem;
+            color: #1a2a4f;
+            font-family: inherit;
+        }
+
+        .input-login::placeholder {
+            color: #b0bed6;
+        }
+
+        /* دکمه ثبت نام */
+        .button-submit {
+            background: linear-gradient(135deg, #004cff, #006eff);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .button-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 76, 255, 0.4);
+        }
+
+        /* لینک ورود */
+        .p {
+            text-align: center;
+            color: #6a7c9f;
+            margin: 15px 0;
+        }
+
+        .span {
+            color: #004cff;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .span:hover {
+            color: #0033cc;
+            text-decoration: underline;
+        }
+
+        /* خط جداکننده */
+        .line {
+            position: relative;
+            text-align: center;
+            margin: 25px 0;
+            color: #b0bed6;
+            font-size: 0.85rem;
+        }
+
+        .line::before,
+        .line::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 42%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #b0bed6, transparent);
+        }
+
+        .line::before {
+            left: 0;
+        }
+
+        .line::after {
+            right: 0;
+        }
+
+        /* دکمه‌های اجتماعی */
+        .flex-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1.5px solid #e0e6f0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a2a4f;
+        }
+
+        .btn:hover {
+            border-color: #004cff;
+            background: #f8faff;
+            transform: translateY(-2px);
+        }
+
+        /* پیام‌ها */
+        .alert {
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            border-right: 4px solid #4caf50;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #c62828;
+            border-right: 4px solid #f44336;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: #ef6c00;
+            border-right: 4px solid #ff9800;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 550px) {
+            .form {
+                padding: 25px 20px;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .flex-row {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<form class="form" method="post" action="{% url 'accounts_otp:register' %}">
+    {% csrf_token %}
+
+    <div class="form-header">
+        <div class="form-logo">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12V8H4V12M20 12L12 18L4 12M20 12H22M2 12H4M12 2V4M12 22V20" stroke="white"
+                      stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M18 6L20 4M6 6L4 4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M12 22C16.4183 22 20 18.4183 20 14C20 9.58172 16.4183 6 12 6C7.58172 6 4 9.58172 4 14C4 18.4183 7.58172 22 12 22Z"
+                      stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
+                <circle cx="12" cy="14" r="3" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h2 class="form-title">✨ خوش آمدید</h2>
+        <p class="form-subtitle">لطفاً اطلاعات خود را وارد کنید</p>
+    </div>
+
+    <!-- نمایش پیام‌ها -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- نام کاربری -->
+    <div class="flex-column">
+        <label>👤 نام و نام خانوادگی</label>
+    </div>
+    <div class="inputForm">
+        <svg height="20" width="20" fill="#004cff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+        </svg>
+        <input type="text" name="username" class="input-login" placeholder="نام و نام خانوادگی خود را وارد کنید" required/>
+    </div>
+
+    <!-- شماره موبایل -->
+    <div class="flex-column">
+        <label>📱 شماره موبایل</label>
+    </div>
+    <div class="inputForm">
+        <svg height="20" width="20" fill="none" stroke="#004cff" stroke-width="1.5" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" fill="none"/>
+            <line x1="12" y1="18" x2="12" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="18" r="1" fill="#004cff"/>
+        </svg>
+        <input type="tel" name="phone" class="input-login" placeholder="09123456789" required pattern="[0-9]{11}"
+               title="شماره موبایل باید 11 رقم باشد"/>
+    </div>
+    <!-- ایمیل -->
+    <!-- ایمیل (اختیاری) -->
+    <div class="flex-column">
+        <label>📧 ایمیل (اختیاری)</label>
+    </div>
+    <div class="inputForm">
+        <svg height="20" width="20" fill="#004cff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+        <input type="email" name="email" class="input-login" placeholder="ایمیل خود را وارد کنید (اختیاری)"/>
+    </div>
+    <!-- رمز عبور -->
+    <div class="flex-column">
+        <label>🔒 رمز عبور</label>
+    </div>
+    <div class="inputForm">
+        <svg viewBox="0 0 24 24" height="20" width="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.75736 10 5.17157 10 8 10H16C18.8284 10 20.2426 10 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 20.2426 2 18.8284 2 16Z"
+                  stroke="#004cff" stroke-width="1.5"/>
+            <circle cx="12" cy="16" r="2" stroke="#004cff" stroke-width="1.5"/>
+            <path d="M6 10V8C6 4.68629 8.68629 2 12 2C15.3137 2 18 4.68629 18 8V10" stroke="#004cff" stroke-width="1.5"
+                  stroke-linecap="round"/>
+        </svg>
+        <input type="password" name="password" class="input-login" placeholder="رمز عبور خود را وارد کنید" required/>
+    </div>
+
+    <!-- تکرار رمز عبور -->
+    <div class="flex-column">
+        <label>🔄 تکرار رمز عبور</label>
+    </div>
+    <div class="inputForm">
+        <svg viewBox="0 0 24 24" height="20" width="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.75736 10 5.17157 10 8 10H16C18.8284 10 20.2426 10 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 20.2426 2 18.8284 2 16Z"
+                  stroke="#004cff" stroke-width="1.5"/>
+            <circle cx="12" cy="16" r="2" stroke="#004cff" stroke-width="1.5"/>
+            <path d="M6 10V8C6 4.68629 8.68629 2 12 2C15.3137 2 18 4.68629 18 8V10" stroke="#004cff" stroke-width="1.5"
+                  stroke-linecap="round"/>
+        </svg>
+        <input type="password" name="confirm_password" class="input-login" placeholder="رمز عبور را تکرار کنید"
+               required/>
+    </div>
+
+    <button class="button-submit" type="submit">
+        🚀 ثبت نام و عضویت
+    </button>
+
+    <p class="p">قبلاً ثبت نام کرده‌اید؟ <a href="{% url 'accounts_app:login' %}" class="span">ورود به حساب</a></p>
+
+</form>
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s;
+    }
+
+    .loading-logo {
+        width: 100px;
+        animation: pulse 1.5s infinite;
+    }
+
+    .loading-dots {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .loading-dots span {
+        width: 12px;
+        height: 12px;
+        background: #004cff;
+        border-radius: 50%;
+        animation: bounce 0.8s infinite;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .loading-text {
+        margin-top: 20px;
+        color: #004cff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <img src="/static/images/logo/Kit.png.jpeg" alt="لوگو" class="loading-logo">
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">در حال بارگذاری...</div>
+    </div>
+</div>
+
+<script>
+    let loadingTimeout = null;
+
+    function showLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+        }
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    }
+
+    // وقتی صفحه کامل لود شد، لودینگ رو مخفی کن
+    window.addEventListener('load', function () {
+        hideLoading();
+    });
+
+    // فقط برای لینک‌های داخلی (به جز دکمه بازگشت)
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.href.startsWith('javascript:')) {
+            // چک کردن اینکه لینک خارجی نیست
+            const currentDomain = window.location.origin;
+            if (link.href.startsWith(currentDomain) || link.href.startsWith('/')) {
+                // جلوگیری از اجرا روی دکمه بازگشت (history.back)
+                if (!link.hasAttribute('data-no-loading')) {
+                    showLoading();
+                }
+            }
+        }
+    });
+
+    // برای دکمه بازگشت مرورگر
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    // برای popstate (وقتی کاربر با دکمه عقب/جلو میره)
+    window.addEventListener('popstate', function () {
+        hideLoading();
+    });
+</script>
+</body>
+</html>
